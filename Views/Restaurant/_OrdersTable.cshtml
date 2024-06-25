@@ -1,0 +1,78 @@
+﻿@using ToGoodToGo.Core.Models.Domains;
+
+@model IEnumerable<Order>
+@{
+}
+<div id="ordersTable">
+    <table class="table mt-1">
+        <thead class="thead-dark bg-secondary text-white">
+            <tr>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">Data zamówienia</th>
+                <th scope="col">Status</th>
+                <th scope="col">Data odebrania</th>
+                <th scope="col">Klient</th>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody class="bg-primary text-white">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var order in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="images/@order.FoodPackage.ImagePath" class="thunbnail" />
+                        </td>
+                        <td>
+                            @order.DateOfOrder.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @if (order.DateOfReceipt is null)
+                            {
+                                <div>Nieodebrane</div>
+                            }
+                            else
+                            {
+                                <div>Odebrane</div>
+                            }
+                        </td>
+                        <td>
+                            @order.DateOfReceipt
+                        </td>
+                        <td>
+                            @order.EndUser.FirstName @order.EndUser.LastName
+                        </td>
+                        <td>
+                            @if (order.DateOfReceipt == null)
+                            {
+                                <form asp-action="MarkOrderAsReceived" asp-controller="Restaurant">
+                                    <input data-val="true" type="hidden" name="id" id="id" value="@order.Id" />
+                                    <button type="submit"
+                                            class="btn btn-secondary btn-sm mb-2">
+                                        Oznacz jako odebrane
+                                    </button>
+                                </form>
+                            }                           
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteOrder('@order.Id', this)">
+                                Usuń zamówienie
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-center" colspan="5">
+                        W bazie danych nie znaleziono żadnych zamówień od Klientów na paczki z żywnością od restauracji.
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+</div>

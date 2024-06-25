@@ -1,0 +1,231 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ToGoodToGo.Core.Models.Domains
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+@model ToGoodToGo.Core.ViewModels.RestaurantViewModel
+@{
+    var user = await UserManager.GetUserAsync(User);
+    ViewData["Title"] = "Panel administracyjny restauracji" + user.RestaurantName;
+}
+
+<div class="container-fluid bg-primary py-1 mb-4 mt-2">
+    <div class="container py-1">
+        <div class="row justify-content-start">
+            <div class="col-lg-8 text-center text-lg-start">
+                <h2 class="display-6 text-white">Panel administracyjny restauracji <strong>@user.RestaurantName</strong></h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (Model.WhichSection == 0 || Model.WhichSection == 1)
+{
+    <div class="container-fluid bg-secondary py-1 mb-0 mt-0">
+        <div class="container py-1">
+            <div class="row justify-content-start">
+                <div class="col-lg-8 text-center text-lg-start">
+                    <h3 class="display-12 text-white">Lista utworzonych paczek z żywnością.</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+
+    <form id="filterForm" class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <button class="btn btn-primary"
+                onclick='window.location.href="@Url.Action("FoodPackage", "Restaurant")"'>
+                    Dodaj nową
+            </button>
+        </div>
+        <div class="col-12">
+            <div class="input-group">
+                <div class="col-auto mt-1">
+                    @Html.TextBoxFor(x => x.FilterFoodPackages.Title, new  { @class = "form-control mb-1", placeholder="Nazwa"})
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="input-group">
+                <div class="col-auto mt-1">
+                    @Html.TextBoxFor(x => x.FilterFoodPackages.Description, new  { @class = "form-control mb-1", placeholder="Opis"})
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="form-check">
+                @Html.CheckBoxFor(x => x.FilterFoodPackages.AlsoAfterDateOfExpiration,
+            new { @class = "form-check-label"})
+                @Html.LabelFor(x => x.FilterFoodPackages.AlsoAfterDateOfExpiration)
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+        </div>
+    </form>
+
+
+    <div class="mb-6">
+        @await Html.PartialAsync("_FoodPackagesTable.cshtml", Model.FoodPackages)
+    </div>
+}  
+@if (Model.WhichSection == 0 || Model.WhichSection == 2)
+{
+    <div class="container-fluid bg-secondary py-1 mb-1 mt-2">
+        <div class="container py-1">
+            <div class="row justify-content-start">
+                    <h3 class="display-12 text-white">Lista zamówień od Klientów.</h3>
+                <div class="col-lg-8 text-center text-lg-start">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="filterOrders" class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <div class="input-group">
+                <div class="col-auto">
+                    @Html.TextBoxFor(x => x.FilterOrders.FirstName, new  { @class = "form-control", placeholder="Imię"})
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group">
+                <div class="col-auto">
+                    @Html.TextBoxFor(x => x.FilterOrders.LastName, new  { @class = "form-control", placeholder="Nazwisko"})
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="col-auto">        
+                @Html.DropDownListFor(x => x.FilterOrders.Status,
+                new List<SelectListItem> {
+                    new SelectListItem { Value = "Nieodebrane" , Text = "Nieodebrane" },
+                    new SelectListItem { Value = "Odebrane" , Text = "Odebrane"     }},
+                "--- Status zamówienia ---",
+                new { @class = "form-control"})
+            </div>
+
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Szukaj</button>
+        </div>
+    </form>
+
+    <div class="mb-6">
+        @await Html.PartialAsync("_OrdersTable.cshtml", Model.Orders)
+    </div>
+}
+
+@section scripts
+    {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('#filterForm').submit(function () {
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Index", "Restaurant")",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        $('#foodPackagesTable').html(data);
+                    },
+                    error: function (data) {
+                        alert(data.message)
+                    },
+                    dataType: "html"
+                });
+
+                return false;
+            });
+
+        });
+
+        $(document).ready(function () {
+
+            $('#filterOrders').submit(function () {
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Index", "Restaurant")",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        $('#ordersTable').html(data);
+                    },
+                    error: function (data) {
+                        alert(data.message)
+                    },
+                    dataType: "html"
+                });
+
+                return false;
+            });
+
+        });
+
+        function deleteFoodPackage(id, btn) {
+
+            if (!confirm("Czy na pewno chcesz usunąć wybraną paczkę z żywnością?"))
+                return;
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteFoodPackage", "Restaurant")",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var row = btn.parentNode.parentNode;
+                        row.parentNode.removeChild(row);
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function (data) {
+                    alert(data.message)
+                },
+                dataType: "json"
+            });
+
+        }
+
+        function deleteOrder(id, btn) {
+
+            if (!confirm("Czy na pewno chcesz anulować wybrane zamówienie?"))
+                return;
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteOrder", "Restaurant")",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var row = btn.parentNode.parentNode;
+                        row.parentNode.removeChild(row);
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function (data) {
+                    alert(data.message)
+                },
+                dataType: "json"
+            });
+
+        }
+    </script>
+}

@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ToGoodToGo.Core.Models.Domains;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav ms-3">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li>
+            <strong><a class="mb-3 text-primary" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                    @User.Identity?.Name
+                </a>
+            </strong>
+    </li>
+    <li>
+        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="btn btn-primary py-md-3 px-md-5 me-3">Wyloguj</button>
+        </form>
+    </li>
+}
+else
+{
+    <li>
+        <strong> <a class="mb-3 text-primary" asp-area="Identity" asp-page="/Account/Register">Rejestracja</a></strong>
+    </li>
+    <li>
+            <strong> <a class="mb-3 text-secondary" asp-area="Identity" asp-page="/Account/Login">Zaloguj</a></strong>
+    </li>
+}
+</ul>

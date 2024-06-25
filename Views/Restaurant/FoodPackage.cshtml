@@ -1,0 +1,79 @@
+﻿@using ToGoodToGo.Core.ViewModels;
+
+@model FoodPackageViewModel;
+@{
+    ViewData["Title"] = Model.Heading;
+}
+<div class="container-fluid bg-secondary py-1 mb-1 mt-2">
+    <div class="container py-1">
+        <div class="row justify-content-start">
+            <div class="col-lg-8 text-center text-lg-start">
+                <h3 class="display-12 text-white">@Model.Heading</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/Restaurant/FoodPackage" enctype="multipart/form-data" method="post" >
+  <p class="alert alert-info mt-2 mb-2 ">
+        Pola Tytuł, Opis, Cena oraz Data ważności są <strong>wymagane</strong>
+    </p>
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.FoodPackage.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.FoodPackage.Title, new {@class = "bg-primary text-white col-lg-12 py-1 px-4 display-7 "})
+        @Html.TextBoxFor(x => x.FoodPackage.Title, new { @class = "form-control", autofocus = "autofocus" })
+        @Html.ValidationMessageFor(x => x.FoodPackage.Title)
+    </div>
+
+    <div class="form-group mb-2 mt-2">
+        @Html.LabelFor(x => x.FoodPackage.Descrirption, new {@class = "bg-primary text-white col-lg-12 py-1 px-4 display-7 "})
+        @Html.TextAreaFor(x => x.FoodPackage.Descrirption, new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.FoodPackage.Descrirption)
+    </div>
+
+    <div class="form-group mb-2 mt-2">
+        @Html.LabelFor(x => x.FoodPackage.Price, new {@class = "bg-primary text-white col-lg-12 py-1 px-4 display-7 "})
+        @Html.TextBoxFor(x => x.FoodPackage.Price, new { @class = "form-control" }) 
+        @Html.ValidationMessageFor(x => x.FoodPackage.Price) 
+    </div>
+    @if (Model.FoodPackage.Id != 0)
+    {
+        <div class="form-group mb-2 mt-2">
+            <img src="/images/@Model.FoodPackage.ImagePath" class="mediumImage">
+        </div>
+    }
+    <div class="form-control">
+        <label asp-for="Photo" class="form-control bg-primary text-white col-lg-12 display-7 "></label>
+        <input asp-for="Photo" class="form-control" accept="image/png, image/gif, image/jpeg" />
+        <span asp-validation-for="Photo" class="text-danger"></span>
+    </div> 
+    
+    <div class="form-group mb-2 mt-2">
+        @Html.LabelFor(x => x.FoodPackage.ExpirationDate, new {@class = "bg-primary text-white col-lg-12 py-1 px-4 display-7 "})
+        @Html.TextBoxFor(x => x.FoodPackage.ExpirationDate, "{0:dd-MM-yyyy}", new { @class = "form-control", @id="ExpirationDate", autocomplete="off" })
+        @Html.ValidationMessageFor(x => x.FoodPackage.ExpirationDate)
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg mt-2">Zapisz</button>
+</form>
+
+@section scripts 
+{
+    <script type="text/javascript">
+    
+        $(document).ready(function () {
+            $('#ExpirationDate').datepicker({
+                format: "dd-mm-yyyy",
+                language: "pl",
+                multidate: false,
+                autoclose: true,
+                todayHighlight: true,
+                forceParse: false
+            });
+        })
+
+    </script>
+}

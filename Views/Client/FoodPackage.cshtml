@@ -1,0 +1,70 @@
+﻿@using ToGoodToGo.Core.Models.Domains
+
+@model FoodPackage
+@{
+}
+
+<div class="container-fluid bg-secondary py-1 mb-0 mt-2">
+    <div class="container py-1">
+        <div class="row justify-content-start">
+            <div class="col-lg-8 text-center text-lg-start">
+                <h3 class="display-12 text-white">Szczegóły paczki z żywnością.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <table class="table mb-3">
+        <thead class="thead-dark bg-secondary text-white">
+            <tr>
+                <th colspan="2">Paczka z żywnością "@Model.Title"</th>
+            </tr>
+        </thead>
+        <tbody class="bg-primary text-white">
+            <tr>
+                <td width="30%">Zdjęcie:</td>
+                <td width="70%">
+                    <img src="/images/@Model.ImagePath" class="mediumImage">
+                </td>
+            </tr>
+            <tr>
+                <td>Opis:</td>
+                <td>@Model.Descrirption</td>
+            </tr>
+            <tr>
+                <td>Cena:</td>
+                <td>@Model.Price</td>
+            </tr>
+            <tr>
+                <td>Przygotowana przez:</td>
+                <td>@Model.Restaurant.RestaurantName</td>
+                
+            </tr>
+            <tr>
+                <td>Adres odbioru:</td>
+                <td>@Model.Restaurant.Street @Model.Restaurant.PostalCode @Model.Restaurant.City</td>
+                
+            </tr>
+            <tr>
+                <td>Data przygotowania:</td>
+                <td>@Model.DateOfCreation.ToString("dd-MM-yyyy")</td>
+                
+            </tr>
+            <tr>
+                <td>Termin przydatności do spożycia:</td>
+                <td>@Model.ExpirationDate.ToString("dd-MM-yyyy")</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <button 
+                        class="btn btn-secondary btn-lg mb-3"
+                        onclick='window.location.href="@Url.Action("AddOrder", "Client", new { id = Model.Id })"'>
+                                Zamawiam!
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

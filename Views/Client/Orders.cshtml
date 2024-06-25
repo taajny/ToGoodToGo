@@ -1,0 +1,89 @@
+﻿@using ToGoodToGo.Core.ViewModels
+
+@model ClientOrdersViewModel
+@{
+    ViewData["Title"] = "Lista zamówień użytkownika";
+}
+
+<div class="container-fluid bg-secondary py-1 mb-0 mt-2">
+    <div class="container py-1">
+        <div class="row justify-content-start">
+            <div class="col-lg-8 text-center text-lg-start">
+                <h3 class="display-12 text-white">Poniżej znajdziesz listę swoich zamówień.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <table class="table mb-3">
+        <thead class="thead-dark bg-secondary text-white">
+            <tr>
+                <th></th>
+                <th>Tytuł</th>
+                <th>Data złożenia zamówienia</th>
+                <th>Restauracja</th>
+                <th>Cena</th>
+                <th>Status zamówienia</th>
+                <th>Data odbioru</th>
+            </tr>
+        </thead>
+        <tbody class="bg-primary text-white">
+        @if (Model.Orders != null && Model.Orders.Any())
+            {
+
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>
+                            <img src="/images/@order.FoodPackage.ImagePath" class="thunbnail" />
+                        </td>
+                        <td>
+                            <strong>@order.FoodPackage.Title</strong>
+                        </td>
+                        <td>
+                            @order.DateOfOrder.ToString("dd-MM-yyyy")
+                        </td>
+                        <td>
+                            <strong>
+                                @order.FoodPackage.Restaurant.RestaurantName
+                            </strong> <br />
+                            @order.FoodPackage.Restaurant.Street <br />
+                            @order.FoodPackage.Restaurant.PostalCode @order.FoodPackage.Restaurant.City
+                        </td>
+                        <td>
+                            @order.FoodPackage.Price PLN
+                        </td>
+                        <td>
+                            @if (order.DateOfReceipt is null)
+                            {
+                                <strong>Nieodebrane</strong>
+                            }
+                            else
+                            {
+                                <strong>Odebrane</strong>
+                            }
+                        </td>
+                        <td>
+                            @if (order.DateOfReceipt is not null)
+                            {
+                                @order.DateOfReceipt.ToString()
+                                ;
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-center" colspan="7">
+                        Na tą chwilę nie posiadasz żadnych zamówień.
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+
+</div>
