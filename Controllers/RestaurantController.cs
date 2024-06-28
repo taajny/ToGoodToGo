@@ -193,7 +193,12 @@ namespace ToGoodToGo.Controllers
         {
             string uploadFolder = Path.Combine(_environment.WebRootPath, "images");
             string filePath = Path.Combine(uploadFolder, photo.FileName);
-            photo.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            using(var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                photo.CopyTo(fileStream);
+            }
+            
         }
     }
 }
